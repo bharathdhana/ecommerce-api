@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -64,5 +66,9 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sellerId", nullable = false)
     private User seller;
+
+    @OneToMany(mappedBy = "product")
+    @Builder.Default
+    private List<CartItem> cartItems = new ArrayList<>();
 
 }
