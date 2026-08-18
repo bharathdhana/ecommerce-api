@@ -1,7 +1,11 @@
 package com.bharath.ecommerceapi.service.inf;
 
+import com.bharath.ecommerceapi.model.dto.response.UserResponse;
+
+import java.util.List;
+
 public interface IUserService {
-    void getUsers();
-    void getUserById();
+    List<UserResponse> getUsers();
+    UserResponse getUserById();
 }
 

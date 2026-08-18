@@ -1,10 +1,13 @@
 package com.bharath.ecommerceapi.service.inf;
 
 import com.bharath.ecommerceapi.model.dto.request.CartItemRequest;
+import com.bharath.ecommerceapi.model.dto.response.CartResponse;
+
+import java.util.List;
 
 public interface ICartService {
-    void addToCart(CartItemRequest request);
-    void updateCart(CartItemRequest request);
-    void getCart();
-    void removeFromCart(Long id);
+    String addToCart(CartItemRequest request);
+    CartResponse updateCart(CartItemRequest request);
+    List<CartResponse> getCart();
+    CartResponse removeFromCart(Long id);
 }

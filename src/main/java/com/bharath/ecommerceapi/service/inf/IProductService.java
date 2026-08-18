@@ -1,14 +1,17 @@
 package com.bharath.ecommerceapi.service.inf;
 
 import com.bharath.ecommerceapi.model.dto.request.ProductRequest;
+import com.bharath.ecommerceapi.model.dto.response.ProductResponse;
+
+import java.util.List;
 
 public interface IProductService {
-    void getAllProducts();
-    void getProductById(Long id);
-    void getProductByCategory(String category);
-    void getProductByPriceRange(Double minPrice, Double maxPrice);
-    void searchProducts(String keyword);
-    void createProduct(ProductRequest request);
-    void updateProduct(Long id, ProductRequest request);
-    void deleteProduct(Long id);
+    List<ProductResponse> getAllProducts();
+    ProductResponse getProductById(Long id);
+    List<ProductResponse> getProductsByCategory(String category);
+    List<ProductResponse> getProductsByPriceRange(Double minPrice, Double maxPrice);
+    List<ProductResponse> searchProducts(String keyword);
+    String createProduct(ProductRequest request);
+    String updateProduct(Long id, ProductRequest request);
+    String deleteProduct(Long id);
 }
