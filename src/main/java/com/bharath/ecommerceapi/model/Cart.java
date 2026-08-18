@@ -28,6 +28,4 @@ public class Cart {
     @Builder.Default
     private List<CartItem> items = new ArrayList<>();
 
-
-
 }

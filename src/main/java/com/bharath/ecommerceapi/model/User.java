@@ -66,6 +66,9 @@ public class User {
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Wishlist wishlist;
+
 
 
 }

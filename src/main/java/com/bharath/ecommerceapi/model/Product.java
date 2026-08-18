@@ -1,6 +1,5 @@
 package com.bharath.ecommerceapi.model;
 
-import com.bharath.ecommerceapi.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -74,5 +73,9 @@ public class Product {
     @OneToMany(mappedBy = "product")
     @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product")
+    @Builder.Default
+    private List<WishlistItem> wishlistItems = new ArrayList<>();
 
 }
