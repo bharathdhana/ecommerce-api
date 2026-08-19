@@ -28,4 +28,15 @@ public class Cart {
     @Builder.Default
     private List<CartItem> items = new ArrayList<>();
 
+    // Helper Functions
+    public void addItem(CartItem item) {
+        items.add(item);
+        item.setCart(this);
+    }
+
+    public void removeItem(CartItem item) {
+        items.remove(item);
+        item.setCart(null);
+    }
+
 }

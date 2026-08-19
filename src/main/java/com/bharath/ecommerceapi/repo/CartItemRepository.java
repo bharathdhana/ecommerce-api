@@ -1,12 +1,12 @@
 package com.bharath.ecommerceapi.repo;
 
-import com.bharath.ecommerceapi.model.Cart;
+import com.bharath.ecommerceapi.model.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface CartRepository extends JpaRepository<Cart, Long> {
-    Optional<Cart> findByUserId(Long id);
+public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+    Optional<CartItem> findByCartIdAndProductId(Long id, Long id1);
 }
