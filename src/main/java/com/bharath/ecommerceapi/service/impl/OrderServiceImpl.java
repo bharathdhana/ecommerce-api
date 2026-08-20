@@ -1,12 +1,14 @@
 package com.bharath.ecommerceapi.service.impl;
 
 import com.bharath.ecommerceapi.exception.BadRequestException;
+import com.bharath.ecommerceapi.exception.ForbiddenException;
 import com.bharath.ecommerceapi.exception.ResourceNotFoundException;
 import com.bharath.ecommerceapi.model.*;
 import com.bharath.ecommerceapi.model.dto.request.OrderRequest;
 import com.bharath.ecommerceapi.model.dto.request.OrderStatusUpdateRequest;
 import com.bharath.ecommerceapi.model.dto.response.OrderItemResponse;
 import com.bharath.ecommerceapi.model.dto.response.OrderResponse;
+import com.bharath.ecommerceapi.model.enums.Role;
 import com.bharath.ecommerceapi.model.enums.Status;
 import com.bharath.ecommerceapi.repo.CartRepository;
 import com.bharath.ecommerceapi.repo.OrderRepository;
@@ -90,6 +92,11 @@ public class OrderServiceImpl implements IOrderService {
         Order order = orderRepository.findById(request.getId()).orElseThrow(
                 () -> new ResourceNotFoundException("Order Not Found" + request.getId()));
         User currentUser = userService.getCurrentUserById(1L);
+
+        if(!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getRole().equals(Role.SELLER)) {
+            throw new ForbiddenException("Only Admin or Seller Can Perform this Operation!");
+        }
+
         if(order.getStatus().equals(Status.DELIVERED) || order.getStatus().equals(Status.CANCELLED)) {
             throw new BadRequestException("Order Cannot be Modified In this Status");
         }
