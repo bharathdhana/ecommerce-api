@@ -1,30 +1,135 @@
 package com.bharath.ecommerceapi.service.impl;
 
+import com.bharath.ecommerceapi.exception.BadRequestException;
+import com.bharath.ecommerceapi.exception.ResourceNotFoundException;
+import com.bharath.ecommerceapi.model.*;
 import com.bharath.ecommerceapi.model.dto.request.OrderRequest;
 import com.bharath.ecommerceapi.model.dto.request.OrderStatusUpdateRequest;
+import com.bharath.ecommerceapi.model.dto.response.OrderItemResponse;
 import com.bharath.ecommerceapi.model.dto.response.OrderResponse;
+import com.bharath.ecommerceapi.model.enums.Status;
+import com.bharath.ecommerceapi.repo.CartRepository;
+import com.bharath.ecommerceapi.repo.OrderRepository;
+import com.bharath.ecommerceapi.repo.ProductRepository;
 import com.bharath.ecommerceapi.service.inf.IOrderService;
+import com.bharath.ecommerceapi.service.inf.IUserService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements IOrderService {
+
+    private final OrderRepository orderRepository;
+    private final IUserService userService;
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
+
     @Override
+    @Transactional
     public OrderResponse createOrder(OrderRequest request) {
-        return null;
+        User currentUser = userService.getCurrentUserById(1L);
+        Cart cart = cartRepository.findByUserId(currentUser.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("Cart not found"));
+        if (cart.getItems().isEmpty()) {
+            throw new BadRequestException("Cart is empty");
+        }
+        Order order = Order.builder()
+                .user(currentUser)
+                .shippingAddress(request.getShippingAddress())
+                .totalAmount(0.0)
+                .status(Status.PENDING)
+                .build();
+
+        double total = 0.0;
+
+        for (CartItem cartItem : cart.getItems()) {
+            Product product = cartItem.getProduct();
+            if (product.getStockQuantity() < cartItem.getQuantity()) {
+                throw new BadRequestException("No Enough Stock for the Product: " + product.getTitle());
+            }
+            OrderItem orderItem = OrderItem.builder()
+                    .quantity(cartItem.getQuantity())
+                    .priceAtPurchase(product.getPrice())
+                    .order(order)
+                    .product(product)
+                    .build();
+            order.getItems().add(orderItem);
+
+            product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
+            productRepository.save(product);
+            total += product.getPrice() * cartItem.getQuantity();
+        }
+        order.setTotalAmount(total);
+        Order savedOrder = orderRepository.save(order);
+        cart.getItems().clear();
+        cartRepository.save(cart);
+        return mapToOrderResponse(savedOrder);
     }
 
     @Override
     public List<OrderResponse> getMyOrders() {
-        return List.of();
+        User currentUser = userService.getCurrentUserById(1L);
+        return orderRepository.findByUserId(currentUser.getId()).stream()
+                .map(this::mapToOrderResponse).collect(Collectors.toList());
     }
 
     @Override
     public OrderResponse getOrderById(Long id) {
-        return null;
+        return mapToOrderResponse(orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order Not Found" + id)));
     }
 
     @Override
+    @Transactional
     public OrderResponse updateOrderStatus(OrderStatusUpdateRequest request) {
-        return null;
+        Order order = orderRepository.findById(request.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("Order Not Found" + request.getId()));
+        User currentUser = userService.getCurrentUserById(1L);
+        if(order.getStatus().equals(Status.DELIVERED) || order.getStatus().equals(Status.CANCELLED)) {
+            throw new BadRequestException("Order Cannot be Modified In this Status");
+        }
+        order.setStatus(Status.valueOf(request.getStatus()));
+        if(request.getStatus().equals(Status.CANCELLED)) {
+            for (OrderItem orderItem : order.getItems()) {
+                Product product = orderItem.getProduct();
+                product.setStockQuantity(product.getStockQuantity() + orderItem.getQuantity());
+                productRepository.save(product);
+            }
+        }
+
+        Order updatedOrder = orderRepository.save(order);
+        return mapToOrderResponse(updatedOrder);
+    }
+
+    private OrderResponse mapToOrderResponse(Order order) {
+        List<OrderItemResponse> orderItems = order.getItems().stream()
+                .map(this::mapToOrderItemResponse).toList();
+
+        return OrderResponse.builder()
+                .id(order.getId())
+                .orderDate(order.getOrderDate())
+                .totalAmount(order.getTotalAmount())
+                .status(order.getStatus())
+                .shippingAddress(order.getShippingAddress())
+                .userId(order.getUser().getId())
+                .items(orderItems)
+                .build();
+    }
+
+    private OrderItemResponse mapToOrderItemResponse(OrderItem orderItem) {
+        return OrderItemResponse.builder()
+                .id(orderItem.getId())
+                .quantity(orderItem.getQuantity())
+                .priceAtPurchase(orderItem.getPriceAtPurchase())
+                .productTitle(orderItem.getProduct().getTitle())
+                .productBrand(orderItem.getProduct().getBrand())
+                .productModel(orderItem.getProduct().getModel())
+                .subTotal(orderItem.getQuantity() * orderItem.getPriceAtPurchase())
+                .build();
     }
 }
