@@ -93,15 +93,22 @@ public class OrderServiceImpl implements IOrderService {
         if(order.getStatus().equals(Status.DELIVERED) || order.getStatus().equals(Status.CANCELLED)) {
             throw new BadRequestException("Order Cannot be Modified In this Status");
         }
-        order.setStatus(Status.valueOf(request.getStatus()));
-        if(request.getStatus().equals(Status.CANCELLED)) {
+
+        Status newStatus;
+        try{
+            newStatus = Status.valueOf(request.getStatus().toUpperCase());
+        } catch (IllegalArgumentException e){
+            throw new BadRequestException("Invalid Order Status: " + request.getStatus());
+        }
+
+        if(newStatus == Status.CANCELLED) {
             for (OrderItem orderItem : order.getItems()) {
                 Product product = orderItem.getProduct();
                 product.setStockQuantity(product.getStockQuantity() + orderItem.getQuantity());
                 productRepository.save(product);
             }
         }
-
+        order.setStatus(newStatus);
         Order updatedOrder = orderRepository.save(order);
         return mapToOrderResponse(updatedOrder);
     }
