@@ -59,7 +59,7 @@ public class GlobalExceptionHandler extends RuntimeException {
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .time(LocalDateTime.now())
-                .statusCode(HttpStatus.NO_CONTENT.value())
+                .statusCode(HttpStatus.NOT_FOUND.value())
                 .error("Resource Not Found Error")
                 .message(e.getMessage())
                 .build();
@@ -94,7 +94,7 @@ public class GlobalExceptionHandler extends RuntimeException {
                 .time(LocalDateTime.now())
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error("Internal Server Error")
-                .message(e.getMessage())
+                .message("An UnExcepted Situation Occurred" + e.getMessage())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }

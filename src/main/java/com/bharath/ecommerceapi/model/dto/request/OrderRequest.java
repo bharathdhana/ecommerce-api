@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderRequest {
-    @NotBlank(message = "mandatory")
+    @NotBlank(message = "shipping address is mandatory")
     private String shippingAddress;
 }

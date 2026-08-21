@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderStatusUpdateRequest {
-    @NotNull(message = "mandatory")
+    @NotNull(message = "id is mandatory")
     private Long id;
 
-    @NotBlank(message = "mandatory")
+    @NotBlank(message = "Status is mandatory")
     private String status;
 }

@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WishlistItemRequest {
 
-    @NotNull(message = "mandatory")
+    @NotNull(message = "product Id is mandatory")
     private Long productId;
 }

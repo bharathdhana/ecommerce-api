@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItemRequest {
-    @NotNull(message = "mandatory")
+    @NotNull(message = "quantity is mandatory")
     @Min(value = 1, message = "quantity should be at least 1!")
     private int quantity;
 
-    @NotNull(message = "mandatory")
+    @NotNull(message = "product Id is mandatory")
     private Long productId;
 }

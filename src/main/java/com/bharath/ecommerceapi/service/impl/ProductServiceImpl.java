@@ -57,7 +57,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public String createProduct(ProductRequest request) {
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUserById(2L);
         if(currentUser.getRole() != Role.SELLER) {
             throw new UnAuthorizedException("Access Denied! Only SELLER's can perform this operation");
         }
@@ -81,8 +81,8 @@ public class ProductServiceImpl implements IProductService {
     public String updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Product Not Found for the Given ID: " + id));
-        User currentUser = userService.getCurrentUserById(1L);
-        if((product.getSeller().getId().equals(currentUser.getId())) && currentUser.getRole() != Role.ADMIN) {
+        User currentUser = userService.getCurrentUserById(2L);
+        if(!(product.getSeller().getId().equals(currentUser.getId())) && currentUser.getRole() != Role.ADMIN) {
             throw new UnAuthorizedException("Access Denied! Only SELLER's of this Product or ADMIN can ONLY perform this operation");
         }
         product.setTitle(request.getTitle());
@@ -93,7 +93,7 @@ public class ProductServiceImpl implements IProductService {
         product.setStockQuantity(request.getStockQuantity());
         product.setCategory(request.getCategory());
         product.setImageUrl(request.getImageUrl());
-        productRepository.save(product);
+//        productRepository.save(product);
         return "Product Updated Successfully";
     }
 
@@ -102,8 +102,8 @@ public class ProductServiceImpl implements IProductService {
     public String deleteProduct(Long id) {
         Product product = productRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Product Not Found for the Given ID: " + id));
-        User currentUser = userService.getCurrentUserById(1L);
-        if((product.getSeller().getId().equals(currentUser.getId())) && currentUser.getRole() != Role.ADMIN) {
+        User currentUser = userService.getCurrentUserById(2L);
+        if(!(product.getSeller().getId().equals(currentUser.getId())) && currentUser.getRole() != Role.ADMIN) {
             throw new UnAuthorizedException("Access Denied! Only SELLER's of this Product or ADMIN can ONLY perform this operation");
         }
         productRepository.delete(product);
