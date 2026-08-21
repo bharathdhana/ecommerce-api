@@ -86,11 +86,11 @@ public class CartServiceImpl implements ICartService {
     }
 
     @Override
-    public CartResponse removeFromCart(Long id) {
+    public CartResponse removeFromCart(Long productId) {
         User currentUser = userService.getCurrentUserById(1L);
         Cart cart = cartRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart Not Found"));
-        CartItem cartItem = cartItemRepository.findById(id)
+        CartItem cartItem = cartItemRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Not Found in Cart"));
         cart.removeItem(cartItem);
         cartItemRepository.delete(cartItem);

@@ -91,7 +91,7 @@ public class OrderServiceImpl implements IOrderService {
     public OrderResponse updateOrderStatus(OrderStatusUpdateRequest request) {
         Order order = orderRepository.findById(request.getId()).orElseThrow(
                 () -> new ResourceNotFoundException("Order Not Found" + request.getId()));
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUserById(2L);
 
         if(!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getRole().equals(Role.SELLER)) {
             throw new ForbiddenException("Only Admin or Seller Can Perform this Operation!");

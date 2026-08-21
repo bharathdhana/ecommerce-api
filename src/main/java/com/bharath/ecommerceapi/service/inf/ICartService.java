@@ -7,5 +7,5 @@ public interface ICartService {
     String addToCart(CartItemRequest request);
     CartResponse updateCart(CartItemRequest request);
     CartResponse getCart();
-    CartResponse removeFromCart(Long id);
+    CartResponse removeFromCart(Long cartItemId);
 }

@@ -7,6 +7,7 @@ import com.bharath.ecommerceapi.model.Wishlist;
 import com.bharath.ecommerceapi.model.dto.request.LoginRequest;
 import com.bharath.ecommerceapi.model.dto.request.RegisterRequest;
 import com.bharath.ecommerceapi.model.dto.response.AuthResponse;
+import com.bharath.ecommerceapi.model.enums.Role;
 import com.bharath.ecommerceapi.repo.CartRepository;
 import com.bharath.ecommerceapi.repo.UserRepository;
 import com.bharath.ecommerceapi.repo.WishlistRepository;
@@ -37,25 +38,27 @@ public class AuthServiceImpl implements IAuthService {
                 .build();
 
         User savedUser = userRepository.save(user);
+        if (savedUser.getRole() == Role.USER) {
+            Cart cart = Cart.builder()
+                    .user(savedUser)
+                    .build();
+            cartRepository.save(cart);
 
-        Cart cart = Cart.builder()
-                .user(savedUser)
-                .build();
-        cartRepository.save(cart);
-
-        Wishlist wishlist = Wishlist.builder()
-                .user(savedUser)
-                .build();
-        wishlistRepository.save(wishlist);
+            Wishlist wishlist = Wishlist.builder()
+                    .user(savedUser)
+                    .build();
+            wishlistRepository.save(wishlist);
+        }
         return "User Created Successfully!";
     }
+
 
     @Override
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BadRequestException("Invalid Email Or Password"));
 
-        if(!user.getPassword().equals(request.getPassword())) {
+        if (!user.getPassword().equals(request.getPassword())) {
             throw new BadRequestException("Invalid Email Or Password!");
         }
 
