@@ -12,9 +12,16 @@ import com.bharath.ecommerceapi.repo.CartRepository;
 import com.bharath.ecommerceapi.repo.UserRepository;
 import com.bharath.ecommerceapi.repo.WishlistRepository;
 import com.bharath.ecommerceapi.service.inf.IAuthService;
+import com.bharath.ecommerceapi.service.inf.IJwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.security.NoSuchAlgorithmException;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +30,9 @@ public class AuthServiceImpl implements IAuthService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final WishlistRepository wishlistRepository;
+    private final AuthenticationManager authenticationManager;
+    private final IJwtService jwtService;
+    private final BCryptPasswordEncoder encoder = new  BCryptPasswordEncoder(10);
 
     @Override
     @Transactional
@@ -33,7 +43,7 @@ public class AuthServiceImpl implements IAuthService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(encoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
 
@@ -55,16 +65,19 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadRequestException("Invalid Email Or Password"));
-
-        if (!user.getPassword().equals(request.getPassword())) {
-            throw new BadRequestException("Invalid Email Or Password!");
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        if (authentication.isAuthenticated()) {
+            try {
+                return AuthResponse.builder()
+                        .token(jwtService.generateToken(request.getEmail()))
+                        .build();
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException("Error while generating JWT token");
+            }
         }
-
         return AuthResponse.builder()
-                .token("123")
+                .token("")
                 .build();
-
     }
 }
