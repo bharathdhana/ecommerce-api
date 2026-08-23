@@ -8,6 +8,6 @@ import java.util.List;
 public interface IUserService {
     List<UserResponse> getUsers();
     UserResponse getUserById(Long id);
-    User getCurrentUserById(Long id);
+    User getCurrentUser();
 }
 

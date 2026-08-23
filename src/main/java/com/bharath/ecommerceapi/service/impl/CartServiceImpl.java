@@ -32,7 +32,7 @@ public class CartServiceImpl implements ICartService {
     @Override
     @Transactional
     public String addToCart(CartItemRequest request) {
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUserId(currentUser.getId())
                 .orElseGet(() -> createCartForUser(currentUser));
         Product product = productRepository.findById(request.getProductId())
@@ -58,7 +58,7 @@ public class CartServiceImpl implements ICartService {
     @Override
     @Transactional
     public CartResponse updateCart(CartItemRequest request) {
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart Not Found"));
         CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), request.getProductId())
@@ -79,7 +79,7 @@ public class CartServiceImpl implements ICartService {
     @Override
     @Transactional
     public CartResponse getCart() {
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUserId(currentUser.getId())
                 .orElseGet(() -> createCartForUser(currentUser));
         return mapToCartResponse(cart);
@@ -87,7 +87,7 @@ public class CartServiceImpl implements ICartService {
 
     @Override
     public CartResponse removeFromCart(Long productId) {
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart Not Found"));
         CartItem cartItem = cartItemRepository.findById(productId)

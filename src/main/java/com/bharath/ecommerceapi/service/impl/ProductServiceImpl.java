@@ -57,7 +57,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public String createProduct(ProductRequest request) {
-        User currentUser = userService.getCurrentUserById(2L);
+        User currentUser = userService.getCurrentUser();
         if(currentUser.getRole() != Role.SELLER) {
             throw new UnAuthorizedException("Access Denied! Only SELLER's can perform this operation");
         }
@@ -81,7 +81,7 @@ public class ProductServiceImpl implements IProductService {
     public String updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Product Not Found for the Given ID: " + id));
-        User currentUser = userService.getCurrentUserById(2L);
+        User currentUser = userService.getCurrentUser();
         if(!(product.getSeller().getId().equals(currentUser.getId())) && currentUser.getRole() != Role.ADMIN) {
             throw new UnAuthorizedException("Access Denied! Only SELLER's of this Product or ADMIN can ONLY perform this operation");
         }
@@ -102,7 +102,7 @@ public class ProductServiceImpl implements IProductService {
     public String deleteProduct(Long id) {
         Product product = productRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Product Not Found for the Given ID: " + id));
-        User currentUser = userService.getCurrentUserById(2L);
+        User currentUser = userService.getCurrentUser();
         if(!(product.getSeller().getId().equals(currentUser.getId())) && currentUser.getRole() != Role.ADMIN) {
             throw new UnAuthorizedException("Access Denied! Only SELLER's of this Product or ADMIN can ONLY perform this operation");
         }

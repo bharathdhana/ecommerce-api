@@ -30,7 +30,7 @@ public class WishlistServiceImpl implements IWishlistService {
     @Override
     @Transactional
     public String addToWishlist(WishlistItemRequest request) {
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUser();
         Wishlist wishlist =  wishlistRepository.findByUserId(currentUser.getId())
                 .orElseGet(()-> createWishlistForUser(currentUser));
         Product product = productRepository.findById(request.getProductId())
@@ -53,7 +53,7 @@ public class WishlistServiceImpl implements IWishlistService {
 
     @Override
     public WishlistResponse getWishlist() {
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUser();
         Wishlist wishlist =  wishlistRepository.findByUserId(currentUser.getId())
                 .orElseGet(()-> createWishlistForUser(currentUser));
         return mapToWishlistResponse(wishlist);
@@ -62,7 +62,7 @@ public class WishlistServiceImpl implements IWishlistService {
     @Override
     @Transactional
     public WishlistResponse removeFromWishlist(Long id) {
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUser();
         Wishlist wishlist = wishlistRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Wishlist Not Found"));
         WishlistItem wishlistItem = wishlistItemRepository.findById(id)

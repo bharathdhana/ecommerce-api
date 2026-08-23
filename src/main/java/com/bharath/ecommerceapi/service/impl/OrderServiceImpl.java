@@ -34,7 +34,7 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     @Transactional
     public OrderResponse createOrder(OrderRequest request) {
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUserId(currentUser.getId()).orElseThrow(
                 () -> new ResourceNotFoundException("Cart not found"));
         if (cart.getItems().isEmpty()) {
@@ -75,7 +75,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public List<OrderResponse> getMyOrders() {
-        User currentUser = userService.getCurrentUserById(1L);
+        User currentUser = userService.getCurrentUser();
         return orderRepository.findByUserId(currentUser.getId()).stream()
                 .map(this::mapToOrderResponse).collect(Collectors.toList());
     }
@@ -91,7 +91,7 @@ public class OrderServiceImpl implements IOrderService {
     public OrderResponse updateOrderStatus(OrderStatusUpdateRequest request) {
         Order order = orderRepository.findById(request.getId()).orElseThrow(
                 () -> new ResourceNotFoundException("Order Not Found" + request.getId()));
-        User currentUser = userService.getCurrentUserById(2L);
+        User currentUser = userService.getCurrentUser();
 
         if(!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getRole().equals(Role.SELLER)) {
             throw new ForbiddenException("Only Admin or Seller Can Perform this Operation!");
