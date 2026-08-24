@@ -11,23 +11,24 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("api/v1/wishlist")
 public class WishlistController {
 
     private final IWishlistService wishlistService;
 
-    @PostMapping("wishlist/item")
+    @PostMapping("/item")
     public ResponseEntity<String> addToWishlist(@Valid @RequestBody WishlistItemRequest request) {
         String response = wishlistService.addToWishlist(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("wishlist")
+    @GetMapping()
     public ResponseEntity<WishlistResponse> getWishlist() {
         WishlistResponse response = wishlistService.getWishlist();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @DeleteMapping("wishlist/{itemId}")
+    @DeleteMapping("/{itemId}")
     public ResponseEntity<WishlistResponse> removeFromWishlist(@PathVariable Long itemId){
         WishlistResponse response = wishlistService.removeFromWishlist(itemId);
         return new ResponseEntity<>(response, HttpStatus.OK);

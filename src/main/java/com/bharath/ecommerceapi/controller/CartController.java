@@ -11,28 +11,29 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("api/v1/cart")
 public class CartController {
     private final ICartService cartService;
 
-    @PostMapping("cart/items")
+    @PostMapping("/items")
     public ResponseEntity<String> addToCart(@Valid @RequestBody CartItemRequest request) {
         String response = cartService.addToCart(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("cart/items")
+    @PutMapping("/items")
     public ResponseEntity<CartResponse> updateCart(@Valid @RequestBody CartItemRequest request) {
         CartResponse cartResponse = cartService.updateCart(request);
         return new ResponseEntity<>(cartResponse, HttpStatus.OK);
     }
 
-    @GetMapping("cart")
+    @GetMapping()
     public ResponseEntity<CartResponse> getCart() {
         CartResponse response = cartService.getCart();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @DeleteMapping("cart/items/{cartItemId}")
+    @DeleteMapping("/items/{cartItemId}")
     public ResponseEntity<CartResponse> removeFromCart(@PathVariable Long cartItemId) {
         CartResponse cartResponse = cartService.removeFromCart(cartItemId);
         return new ResponseEntity<>(cartResponse, HttpStatus.OK);

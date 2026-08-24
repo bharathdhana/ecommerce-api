@@ -31,14 +31,14 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.equals("/login") || path.equals("/register");
+        return path.equals("/api/v1/auth/login") || path.equals("/api/v1/auth/register");
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
-        String authToken = null;
-        String email = null;
+        String authToken;
+        String email;
         try {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 authToken = authHeader.substring(7);

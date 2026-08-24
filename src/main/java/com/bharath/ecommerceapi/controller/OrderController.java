@@ -14,28 +14,29 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("api/v1/order")
 public class OrderController {
     public final IOrderService orderService;
 
-    @PostMapping("order")
+    @PostMapping()
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest request){
         OrderResponse response = orderService.createOrder(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("orders")
+    @GetMapping("/orders")
     public ResponseEntity<List<OrderResponse>> getMyOrders() {
         List<OrderResponse> orders = orderService.getMyOrders();
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
-    @GetMapping("order/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long id) {
         OrderResponse response = orderService.getOrderById(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("order")
+    @PutMapping()
     public ResponseEntity<OrderResponse> updateOrderStatus(@Valid @RequestBody OrderStatusUpdateRequest request){
         OrderResponse response = orderService.updateOrderStatus(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
