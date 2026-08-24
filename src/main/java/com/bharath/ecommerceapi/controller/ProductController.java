@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,6 +54,7 @@ public class ProductController {
     }
 
     @PutMapping("product")
+    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<String> updateProduct(@RequestParam Long id, @Valid @RequestBody ProductRequest request) {
         String response = productService.updateProduct(id, request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

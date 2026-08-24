@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -107,6 +108,17 @@ public class GlobalExceptionHandler extends RuntimeException {
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .error("UnAuthorized")
                 .message("Invalid Email or Password")
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .time(LocalDateTime.now().toString())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .error("Authorized Denied")
+                .message("Not Authorized for Accessing this Endpoints")
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
