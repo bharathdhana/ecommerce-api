@@ -1,5 +1,6 @@
 package com.bharath.ecommerceapi.service.impl;
 
+import com.bharath.ecommerceapi.exception.JwtValidationException;
 import com.bharath.ecommerceapi.service.inf.IJwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -51,8 +52,12 @@ public class JwtServiceImpl implements IJwtService {
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claim = extractAllClaims(token);
-        return claimsResolver.apply(claim);
+        try {
+            final Claims claim = extractAllClaims(token);
+            return claimsResolver.apply(claim);
+        } catch (Exception e) {
+            throw new JwtValidationException("Jwt Validation Exception");
+        }
     }
 
     private Claims extractAllClaims(String token) {

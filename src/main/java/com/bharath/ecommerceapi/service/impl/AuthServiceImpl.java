@@ -21,8 +21,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.NoSuchAlgorithmException;
-
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements IAuthService {
@@ -68,13 +66,9 @@ public class AuthServiceImpl implements IAuthService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         if (authentication.isAuthenticated()) {
-            try {
-                return AuthResponse.builder()
-                        .token(jwtService.generateToken(request.getEmail()))
-                        .build();
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException("Error while generating JWT token");
-            }
+            return AuthResponse.builder()
+                    .token(jwtService.generateToken(request.getEmail()))
+                    .build();
         }
         return AuthResponse.builder()
                 .token("")
