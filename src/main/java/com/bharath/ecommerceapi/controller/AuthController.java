@@ -4,6 +4,8 @@ import com.bharath.ecommerceapi.model.dto.request.LoginRequest;
 import com.bharath.ecommerceapi.model.dto.request.RegisterRequest;
 import com.bharath.ecommerceapi.model.dto.response.AuthResponse;
 import com.bharath.ecommerceapi.service.inf.IAuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,16 +18,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/auth")
+@Tag(name="Authentication", description = "APIs for Authenticating the user")
 public class AuthController {
 
     private final IAuthService authService;
 
+    @Operation(summary = "Register a user", description = "For Register User", tags = {"Authentication"})
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
         String response = authService.register(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "User Login", description = "For User Login", tags = {"Authentication"})
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         try {

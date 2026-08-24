@@ -40,7 +40,8 @@ public class SecurityConfig {
                         }
                 ))
                         .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login")
+                                .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login",
+                                        "/swagger-ui/**", "/v3/api-docs/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
