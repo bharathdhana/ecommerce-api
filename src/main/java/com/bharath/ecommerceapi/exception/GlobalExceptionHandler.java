@@ -1,6 +1,7 @@
 package com.bharath.ecommerceapi.exception;
 
 import com.bharath.ecommerceapi.model.dto.response.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler extends RuntimeException {
 
     @ExceptionHandler(BadRequestException.class)
@@ -31,6 +33,7 @@ public class GlobalExceptionHandler extends RuntimeException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error("Validation Error Occurred", e);
         Map<String, String> errors = new HashMap<>();
         e.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
